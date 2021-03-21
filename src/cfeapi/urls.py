@@ -13,14 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import url
 from django.contrib import admin
-from django.urls import path
+from django.conf.urls import include
 
-from updates.views import json_example_view, JsonCBV, JsonCBV2
+from updates.views import (
+    json_example_view,
+    JsonCBV,
+    JsonCBV2,
+    SerializedListView
+)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('json/example/', json_example_view),
-    path('json/cbv/', JsonCBV.as_view()),
-    path('json/cbv2/', JsonCBV2.as_view())
+    url(r'^admin/', admin.site.urls),
+    url(r'^json/example/$', json_example_view),
+    url(r'^json/cbv/$', JsonCBV.as_view()),
+    url(r'^json/cbv2/$', JsonCBV2.as_view()),
+    url(r'^json/list/$', SerializedListView.as_view()),
+    url(r'^json/detail/$', SerializedListView.as_view())
 ]
