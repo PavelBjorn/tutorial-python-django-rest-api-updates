@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-from django.core.serializers import serialize
 import json
 
 
@@ -9,16 +8,11 @@ def upload_update_image(instance, filename):
 
 
 class UpdateQuerySet(models.QuerySet):
-    # def serialize(self):
-    #     return serialize("json", self, fields=('user', 'content', 'image'))
 
     def serialize(self):
-        qs = self
-        final_array = []
-        for obj in qs:
-            struct = json.load(obj.serialize())
-            final_array.append(struct)
-        return json.dumps(final_array)
+        list_values = list(self.values("user", "content", "image"))
+        print(list_values)
+        return json.dumps(list_values)
 
 
 class UpdateManager(models.Manager):
@@ -39,8 +33,12 @@ class Update(models.Model):
         return self.content or ""
 
     def serialize(self):
-        json_data = serialize("json", [self], fields=('user', 'content', 'image'))
-        struct = json.loads(json_data)  # list of dictionary
-        print(struct)
-        data = json.dumps(struct[0]['fields'])
-        return data
+        image = self.image
+        image_url = self.image.url if image else ""
+
+        data = {
+            "content": self.content,
+            "user": self.user_id,
+            "image": image_url
+        }
+        return json.dumps(data)
