@@ -17,14 +17,6 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.conf.urls import include
 
-from updates.views import (
-    json_example_view,
-    JsonCBV,
-    JsonCBV2,
-    SerializedListView,
-    SerializedView
-)
-
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/updates/', include('updates.api.urls'))  # api/updates/1/ --> detail
