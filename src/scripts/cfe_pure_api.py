@@ -22,9 +22,9 @@ def get_list():
 def create_update():
     new_data = {
         "user": 1,
-        "content": "Another use content"
+        "content": "Some valid data"
     }
-    r = requests.post(BASE_URL + ENDPOINT, data=new_data)
+    r = requests.post(BASE_URL + ENDPOINT + "1/", data=new_data)
     print("Status Code: " + str(r.status_code))
 
     if r.status_code == requests.codes.ok:
