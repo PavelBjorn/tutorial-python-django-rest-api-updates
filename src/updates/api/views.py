@@ -52,7 +52,8 @@ class UpdateModelDetailAPI(HttpResponseMixin, CSRFExemptMixin, View):
             error_data = json.dumps({"message": "Update not found"})
             return self.render_to_response(error_data, status=404)
 
-        return self.render_to_response({}, 403)
+        obj.delete()
+        return self.render_to_response(json.dumps({"message": "Update was deleted"}), 205)
 
     def post(self, request, *args, **kwargs):
         json_data = json.dumps({"message": "Forbidden, please use the api/updates/ endpoint"})

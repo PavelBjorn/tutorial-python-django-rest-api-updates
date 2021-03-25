@@ -49,7 +49,7 @@ def do_obj_update():
 
 
 def do_obj_delete():
-    r = requests.delete(BASE_URL + ENDPOINT + "2/")
+    r = requests.delete(BASE_URL + ENDPOINT + "7/")
     print("Status Code: " + str(r.status_code))
     print("Headers: " + str(r.headers))
 
@@ -60,6 +60,6 @@ def do_obj_delete():
 
 
 # get_list()
-print(create_update())
+# print(create_update())
 # print(do_obj_update())
-# print(do_obj_delete())
+print(do_obj_delete())
