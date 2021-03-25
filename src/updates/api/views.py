@@ -1,4 +1,5 @@
-from updates.api.mixins import CSRFExemptMixin
+from .mixins import CSRFExemptMixin
+from .utils import is_json
 from updates.forms import UpdateModelForm
 from updates.models import Update as UpdateModel
 from django.views.generic import View
@@ -38,7 +39,12 @@ class UpdateModelDetailAPI(HttpResponseMixin, CSRFExemptMixin, View):
         print(request.POST)
         body = request.body
         print(body)
-        return self.render_to_response({}, 403)
+
+        if not is_json(body):
+            error_data = json.dumps({"message": "Invalid data, please use JSON"})
+            return self.render_to_response(error_data, status=400)
+
+        return self.render_to_response(json.dumps({"message": "Will do something wit it"}), 200)
 
     def delete(self, request, update_id, *args, **kwargs):
         obj = self.get_object(update_id)
@@ -46,7 +52,8 @@ class UpdateModelDetailAPI(HttpResponseMixin, CSRFExemptMixin, View):
             error_data = json.dumps({"message": "Update not found"})
             return self.render_to_response(error_data, status=404)
 
-        return self.render_to_response({}, 403)
+        obj.delete()
+        return self.render_to_response(json.dumps({"message": "Update was deleted"}), 205)
 
     def post(self, request, *args, **kwargs):
         json_data = json.dumps({"message": "Forbidden, please use the api/updates/ endpoint"})
@@ -63,10 +70,17 @@ class UpdateModelListAPI(HttpResponseMixin, CSRFExemptMixin, View):
 
     def post(self, request, *args, **kwargs):
         print(request.POST)
-        form = UpdateModelForm(request.POST)
+        body = request.body
+
+        if not is_json(body):
+            error_data = json.dumps({"message": "Invalid data, please use JSON"})
+            return self.render_to_response(error_data, status=400)
+
+        data = json.loads(body)
+        form = UpdateModelForm(data)
         if form.is_valid():
             obj = form.save(commit=True)
-            obj_data = obj.serialize
+            obj_data = obj.serialize()
             return self.render_to_response(data=obj_data, status=201)
         if form.errors:
             data = json.dumps(form.errors)
