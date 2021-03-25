@@ -30,21 +30,33 @@ class UpdateModelDetailAPI(HttpResponseMixin, CSRFExemptMixin, View):
         return self.render_to_response(json_data)
 
     def put(self, request, update_id, *args, **kwargs):
+        print(request.body)
+        if not is_json(request.body):
+            error_data = json.dumps({"message": "Invalid data, please use JSON"})
+            return self.render_to_response(error_data, status=400)
+
         obj = self.get_object(update_id)
         if obj is None:
             error_data = json.dumps({"message": "Update not found"})
             return self.render_to_response(error_data, status=404)
 
-        print(dir(request))
-        print(request.POST)
-        body = request.body
-        print(body)
+        data = json.loads(obj.serialize())
+        passed_data = json.loads(request.body)
+        for key, value in passed_data.items():
+            data[key] = value
 
-        if not is_json(body):
-            error_data = json.dumps({"message": "Invalid data, please use JSON"})
-            return self.render_to_response(error_data, status=400)
+        form = UpdateModelForm(data, instance=obj)
+        if form.is_valid():
+            form.save(commit=True)
+            obj_data = json.dumps(data)
+            return self.render_to_response(data=obj_data, status=201)
+        if form.errors:
+            data = json.dumps(form.errors)
+            return self.render_to_response(data=data, status=400)
 
-        return self.render_to_response(json.dumps({"message": "Will do something wit it"}), 200)
+        data = json.dumps("message: Not Allowed")
+
+        return self.render_to_response(json.dumps(data), 403)
 
     def delete(self, request, update_id, *args, **kwargs):
         obj = self.get_object(update_id)
@@ -52,8 +64,11 @@ class UpdateModelDetailAPI(HttpResponseMixin, CSRFExemptMixin, View):
             error_data = json.dumps({"message": "Update not found"})
             return self.render_to_response(error_data, status=404)
 
-        obj.delete()
-        return self.render_to_response(json.dumps({"message": "Update was deleted"}), 205)
+        deleted_, item_deleted = obj.delete()
+        if deleted_ == 1:
+            return self.render_to_response(json.dumps({"message": "Update was deleted"}), 205)
+
+        return self.render_to_response(json.dumps({"message": "Could not delete item. Please try again latee"}), 400)
 
     def post(self, request, *args, **kwargs):
         json_data = json.dumps({"message": "Forbidden, please use the api/updates/ endpoint"})

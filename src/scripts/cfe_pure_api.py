@@ -8,21 +8,24 @@ ENDPOINT: Final = "api/updates/"
 
 
 def get_list():
-    r = requests.get(BASE_URL + ENDPOINT)
+    id = str(input("Enter update id or jut skip it to get list: "))
+
+    if id is None or id == "":
+        query = ""
+    else:
+        query = id + "/"
+
+    r = requests.get(BASE_URL + ENDPOINT + query)
     data = r.json()
     print(type(json.dumps(data)))
-    for obj in data:
-        print(obj['id'])
-        if obj['id'] == 1:
-            r2 = requests.get(BASE_URL + ENDPOINT + str(obj['id']))
-            print(r2.json())
+
     return r.json()
 
 
 def create_update():
     new_data = {
-        "user": 1,
-        "content": "Some valid data"
+        "user": int(input("Enter user id: ")),
+        "content": str(input("Enter content: "))
     }
     r = requests.post(BASE_URL + ENDPOINT, data=json.dumps(new_data))
     print("Status Code: " + str(r.status_code))
@@ -35,12 +38,10 @@ def create_update():
 
 def do_obj_update():
     new_data = {
-        'id': 1,
-        "content": "Some valid data"
+        "content": str(input("Please enter content: "))
     }
-    r = requests.put(BASE_URL + ENDPOINT + "1/", data=json.dumps(new_data))
+    r = requests.put(BASE_URL + ENDPOINT + str(input("Please input id: ")) + "/", data=json.dumps(new_data))
     print("Status Code: " + str(r.status_code))
-    print("Headers: " + str(r.headers))
 
     if r.status_code == requests.codes.ok:
         return r.json()
@@ -49,9 +50,8 @@ def do_obj_update():
 
 
 def do_obj_delete():
-    r = requests.delete(BASE_URL + ENDPOINT + "7/")
+    r = requests.delete(BASE_URL + ENDPOINT + str(input("Please input id: ")) + "/")
     print("Status Code: " + str(r.status_code))
-    print("Headers: " + str(r.headers))
 
     if r.status_code == requests.codes.ok:
         return r.json()
@@ -59,7 +59,24 @@ def do_obj_delete():
     return r.text
 
 
-# get_list()
-# print(create_update())
-# print(do_obj_update())
-print(do_obj_delete())
+def execute():
+    command = str(input("Please enter command:"))
+    try:
+        if command == "del":
+            result = do_obj_delete()
+        elif command == "create":
+            result = create_update()
+        elif command == "update":
+            result = do_obj_update()
+        elif command == "get":
+            result = get_list()
+        else:
+            result = "Unknown command " + command
+
+        print(result)
+    except Exception as e:
+        print(e)
+        execute()
+
+
+execute()
