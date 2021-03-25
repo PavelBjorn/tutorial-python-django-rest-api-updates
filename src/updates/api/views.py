@@ -12,20 +12,45 @@ from cfeapi.mixins import HttpResponseMixin
 class UpdateModelDetailAPI(HttpResponseMixin, CSRFExemptMixin, View):
     is_json = True
 
+    def get_object(self, object_id=None):
+        qs = UpdateModel.objects.filter(id=object_id)
+        if qs.count() == 1:
+            return qs.first()
+        return None
+
     def get(self, request, update_id, *args, **kwargs):
-        obj = UpdateModel.objects.get(id=update_id)
+        obj = self.get_object(update_id)
+
+        if obj is None:
+            error_data = json.dumps({"message": "Update not found"})
+            return self.render_to_response(error_data, status=404)
+
         json_data = obj.serialize()
         return self.render_to_response(json_data)
 
-    def put(self, *args, **kwargs):
+    def put(self, request, update_id, *args, **kwargs):
+        obj = self.get_object(update_id)
+        if obj is None:
+            error_data = json.dumps({"message": "Update not found"})
+            return self.render_to_response(error_data, status=404)
+
+        print(dir(request))
+        print(request.POST)
+        body = request.body
+        print(body)
         return self.render_to_response({}, 403)
 
-    def post(self, *args, **kwargs):
+    def delete(self, request, update_id, *args, **kwargs):
+        obj = self.get_object(update_id)
+        if obj is None:
+            error_data = json.dumps({"message": "Update not found"})
+            return self.render_to_response(error_data, status=404)
+
+        return self.render_to_response({}, 403)
+
+    def post(self, request, *args, **kwargs):
         json_data = json.dumps({"message": "Forbidden, please use the api/updates/ endpoint"})
         return self.render_to_response(json_data, 403)
-
-    def delete(self, *args, **kwargs):
-        return self.render_to_response({}, 403)
 
 
 class UpdateModelListAPI(HttpResponseMixin, CSRFExemptMixin, View):
