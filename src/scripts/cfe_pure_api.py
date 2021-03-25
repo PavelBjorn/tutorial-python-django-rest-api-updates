@@ -11,15 +11,18 @@ def get_list():
     id = str(input("Enter update id or jut skip it to get list: "))
 
     if id is None or id == "":
-        query = ""
+        query = None
     else:
-        query = id + "/"
+        query = json.dumps({"id": id})
 
-    r = requests.get(BASE_URL + ENDPOINT + query)
+    print(id)
+    r = requests.get(BASE_URL + ENDPOINT, data=query)
     data = r.json()
     print(type(json.dumps(data)))
 
-    return r.json()
+    if r.status_code == requests.codes.ok:
+        return r.json()
+    return r.text
 
 
 def create_update():
@@ -31,16 +34,17 @@ def create_update():
     print("Status Code: " + str(r.status_code))
 
     if r.status_code == requests.codes.ok:
-        print(r.json())
+        return r.json()
 
     return r.text
 
 
 def do_obj_update():
     new_data = {
+        "id": str(input("Please input id: ")),
         "content": str(input("Please enter content: "))
     }
-    r = requests.put(BASE_URL + ENDPOINT + str(input("Please input id: ")) + "/", data=json.dumps(new_data))
+    r = requests.put(BASE_URL + ENDPOINT, data=json.dumps(new_data))
     print("Status Code: " + str(r.status_code))
 
     if r.status_code == requests.codes.ok:
@@ -50,7 +54,10 @@ def do_obj_update():
 
 
 def do_obj_delete():
-    r = requests.delete(BASE_URL + ENDPOINT + str(input("Please input id: ")) + "/")
+    new_data = {
+        "id": str(input("Please input id: "))
+    }
+    r = requests.delete(BASE_URL + ENDPOINT, data=json.dumps(new_data))
     print("Status Code: " + str(r.status_code))
 
     if r.status_code == requests.codes.ok:
