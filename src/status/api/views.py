@@ -28,3 +28,10 @@ class StatusAPIView(generics.ListAPIView):
         if query is not None:
             qs = qs.filter(content__icontains=query)
         return qs
+
+
+class StatusCreateAPIView(generics.CreateAPIView):
+    permission_classes = []
+    authentication_classes = []
+    queryset = Status.objects.all()
+    serializer_class = StatusSerializer
