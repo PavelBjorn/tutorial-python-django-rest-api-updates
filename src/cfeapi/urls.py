@@ -19,5 +19,7 @@ from django.conf.urls import include
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/updates/', include('updates.api.urls'))  # api/updates/1/ --> detail
+    url(r'^api/updates/', include('updates.api.urls')),  # api/updates/1/ --> detail
+
+    url(r'^api/status/', include('status.api.urls'))
 ]
