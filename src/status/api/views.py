@@ -42,7 +42,7 @@ class StatusDetailAPIView(generics.RetrieveAPIView):
     authentication_classes = []
     serializer_class = StatusSerializer
 
-    lookup_field = 'id'  # Changes params to id for automatically object retrieving
+    lookup_field = 'id'  # "pk" - is default param. Changes "pk" to "id" for automatically object retrieving
     queryset = Status.objects.all()
 
     # To customize object retrieving
@@ -50,3 +50,21 @@ class StatusDetailAPIView(generics.RetrieveAPIView):
     #     kwargs = self.kwargs
     #     kw_id = kwargs.get('id')
     #     return Status.objects.get(id=kw_id)
+
+
+class StatusUpdateAPIView(generics.UpdateAPIView):
+    permission_classes = []
+    authentication_classes = []
+    serializer_class = StatusSerializer
+
+    lookup_field = 'id'  # Changes params to id for automatically object retrieving
+    queryset = Status.objects.all()
+
+
+class StatusDeleteAPIView(generics.DestroyAPIView):
+    permission_classes = []
+    authentication_classes = []
+    serializer_class = StatusSerializer
+
+    lookup_field = 'id'  # Changes params to id for automatically object retrieving
+    queryset = Status.objects.all()
