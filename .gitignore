@@ -19,3 +19,5 @@ venv.bak/
 /src/db.sqlite3
 /Scripts/
 /Lib/
+static-server/
+Include/
