@@ -1,7 +1,9 @@
 import rest_framework.mixins as mixins
 import rest_framework.generics as generics
+from rest_framework import permissions as permissions
 import json
 from django.shortcuts import get_object_or_404
+from rest_framework.authentication import SessionAuthentication
 
 from status.models import Status
 from .serializers import StatusSerializer
@@ -22,8 +24,8 @@ class StatusAPIDetailView(
     mixins.DestroyModelMixin,
     generics.RetrieveAPIView
 ):
-    permission_classes = []
-    authentication_classes = []
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    authentication_classes = [SessionAuthentication]
     serializer_class = StatusSerializer
     queryset = Status.objects.all()
     lookup_field = 'id'
@@ -43,14 +45,15 @@ class StatusAPIView(
     mixins.CreateModelMixin,
     generics.ListAPIView
 ):
-    permission_classes = []
-    authentication_classes = []
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    authentication_classes = [SessionAuthentication]
     serializer_class = StatusSerializer
     object_id = None
 
     def get_queryset(self):
         qs = Status.objects.all()
         request = self.request
+        # print(request.user)
         query = request.GET.get('q')
         if query is not None:
             qs = qs.filter(content__icontains=query)
@@ -59,3 +62,5 @@ class StatusAPIView(
     def post(self, request, *args, **kwargs):
         return self.create(request, args, kwargs)
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
