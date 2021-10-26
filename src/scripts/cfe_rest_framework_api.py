@@ -3,7 +3,30 @@ import json
 import os
 
 ENDPOINT = "http://127.0.0.1:8000/api/status/"
+AUTH_ENDPOINT = "http://127.0.0.1:8000/api/auth/jwt/"
+REFRESH_AUTH_ENDPOINT = AUTH_ENDPOINT + "refresh/"
 
+# AUTH
+auth_headers = {
+    "content-type": "application/json"
+}
+auth_data = {
+    'username': str(input("User Name: ")),
+    'password': str(input("Password: "))
+}
+r_auth = requests.post(AUTH_ENDPOINT, data=json.dumps(auth_data), headers=auth_headers)
+token = r_auth.json()['token']
+print("Auth -> " + token)
+# Refresh
+
+refresh_data = {
+    'token': token
+}
+r_auth_refresh = requests.post(REFRESH_AUTH_ENDPOINT, data=json.dumps(refresh_data), headers=auth_headers)
+refresh_token = r_auth_refresh.json()['token']
+print("Refresh Token -> " + refresh_token)
+
+# OTHER
 get_data = ENDPOINT + str(22) + "/"
 
 r = requests.get(get_data)
