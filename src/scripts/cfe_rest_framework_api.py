@@ -1,84 +1,92 @@
 import requests
 import json
 import os
+from random import random
 
 ENDPOINT = "http://127.0.0.1:8000/api/status/"
 AUTH_ENDPOINT = "http://127.0.0.1:8000/api/auth/jwt/"
 REFRESH_AUTH_ENDPOINT = AUTH_ENDPOINT + "refresh/"
 
-# AUTH
-auth_headers = {
-    "content-type": "application/json"
-}
-auth_data = {
-    'username': str(input("User Name: ")),
-    'password': str(input("Password: "))
-}
-r_auth = requests.post(AUTH_ENDPOINT, data=json.dumps(auth_data), headers=auth_headers)
-token = r_auth.json()['token']
-print("Auth -> " + token)
-# Refresh
-
-refresh_data = {
-    'token': token
-}
-r_auth_refresh = requests.post(REFRESH_AUTH_ENDPOINT, data=json.dumps(refresh_data), headers=auth_headers)
-refresh_token = r_auth_refresh.json()['token']
-print("Refresh Token -> " + refresh_token)
-
-# OTHER
-get_data = ENDPOINT + str(22) + "/"
-
-r = requests.get(get_data)
-print("R -> " + str(r.text))
-
-r2 = requests.get(ENDPOINT)
-print("R2 -> " + str(r2.status_code))
-
-post_data = json.dumps({"content": "Some random content"})
-post_headers = {
-    "content-type": "application/json"
-}
-post_response = requests.put(get_data, data=post_data, headers=post_headers)
-print("POST respose -> " + str(post_response.text))
-
-# # TODO detect hoe to send multipart data to make put method works
-# def do(method='get', id=None, data={}, is_json=True, image_path=None):
-#     headers = {}
-#     if is_json:
-#         headers['content-type'] = 'application/json'
-#         data = json.dumps(data)
-#
-#     print(image_path)
-#
-#     url = ENDPOINT
-#     if id is not None:
-#         url = url + id + "/"
-#
-#     print(url)
-#     if image_path is not None:
-#         with open(image_path, mode="rb") as image:
-#             fileData = {
-#                 'image': image
-#             }
-#             r = requests.request(method, url, data=data, files=fileData)
-#     else:
-#         r = requests.request(method, url, data=data, headers=headers)
-#
-#     print("Url: " + r.url)
-#     print(r.status_code)
-#     print(r.text)
-#     return r
-#
-#
-# do(method="put", id='21', data={'user': 1, "conten": "Content With Image"}, is_json=False, image_path=input("Image path: "))
-
-# do(method="put", id='1', data={'user': 1, "content": "try to update content"}, is_json=True)
+token = None
 
 
-# do(method="get", id='1')
+def get_token():
+    global token
+    if token is None:
+        auth_headers = {
+            "content-type": "application/json"
+        }
+        auth_data = {
+            'username': str(input("User Name: ")).strip(),
+            'password': str(input("Password: ")).strip()
+        }
+        r_auth = requests.post(AUTH_ENDPOINT, data=json.dumps(auth_data), headers=auth_headers)
+        print("Auth -> " + r_auth.text)
+        token = r_auth.json()['token']
+    return token
 
-# do(method='post', data={'user': 1, 'content': "Some new Content"}, image_path=input("Image path: "), is_json=False)
-# do(method='put', data={'user': 1, 'content': 'Updated content from script'})
-# do(method='delete', data={'id': 12})
-# do(method='get')
+
+def refresh_token(token):
+    refresh_data = {
+        'token': token
+    }
+    r_auth_refresh = requests.post(REFRESH_AUTH_ENDPOINT, data=json.dumps(refresh_data), headers=auth_headers)
+    refresh_token = r_auth_refresh.json()['token']
+    print("Refresh Token -> " + refresh_token)
+    return refresh_token
+
+# TODO detect hoe to send multipart data to make put method works
+def do(token, method='get', id=None, data={}, image_path=None):
+    headers = {
+        "Authorization": "JWT " + token,
+    }
+    if image_path is None:
+        headers['content-type'] = 'application/json'
+        data = json.dumps(data)
+
+    print(image_path)
+
+    url = ENDPOINT
+    if id is not None:
+        url = url + id + "/"
+
+    print(url)
+    if image_path is not None:
+        with open(image_path.replace("\"", ""), mode="rb") as image:
+            fileData = {
+                'image': image
+            }
+            r = requests.request(method, url, data=data, files=fileData, headers=headers)
+    else:
+        r = requests.request(method, url, data=data, headers=headers)
+
+    print("Url: " + r.url)
+    print("Status code:" + str(r.status_code))
+    print(r.text)
+    return r
+
+
+def executeRequest():
+    request_type = str(input("Request Type get/get_item/put/post/put_image/post_image/exit: ")).strip()
+    if request_type == "get":
+        do(token=get_token(), method="get")
+    elif request_type == "get_item":
+        do(token=get_token(), method="get", id=str(input("Item Id: ")))
+    elif request_type == "put":
+        do(token=get_token(), method="put", id=str(input("Item Id: ")), data={"content": str(input("Content: "))})
+    elif request_type == "put_image":
+        do(token=get_token(), method="put", id=str(input("Item Id: ")), image_path=input("Image path: "))
+    elif request_type == "post":
+        do(token=get_token(), method="post", data={"content": str(input("Content: "))})
+    elif request_type == "post_image":
+        do(token=get_token(), method="post", image_path=input("Image path: "))
+    elif request_type == "exit":
+        print("Exit from script")
+        return
+    else:
+        print(request_type + " is wrong type of request!!! get/get_item/put/post/put_image/post_image/exit allowed")
+
+    executeRequest()
+
+
+executeRequest()
