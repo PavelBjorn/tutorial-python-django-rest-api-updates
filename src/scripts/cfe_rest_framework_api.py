@@ -4,7 +4,7 @@ import os
 from random import random
 
 ENDPOINT = "http://127.0.0.1:8000/api/status/"
-AUTH_ENDPOINT = "http://127.0.0.1:8000/api/auth/jwt/"
+AUTH_ENDPOINT = "http://127.0.0.1:8000/api/auth/"
 REFRESH_AUTH_ENDPOINT = AUTH_ENDPOINT + "refresh/"
 
 token = None
