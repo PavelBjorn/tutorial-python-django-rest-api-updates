@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     # third party
     'rest_framework',
     # local
+    'accounts',
     'status',
     'updates',
 ]
