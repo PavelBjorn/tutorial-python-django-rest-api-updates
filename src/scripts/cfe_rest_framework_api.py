@@ -23,8 +23,6 @@ def create_user():
     }
     r_register = requests.post(AUTH_ENDPOINT + "register/", data=json.dumps(register_data), headers=register_headers)
     print("Register -> " + r_register.text)
-    token = r_register.json()['token']
-    return token
 
 
 def get_token():
