@@ -10,6 +10,23 @@ REFRESH_AUTH_ENDPOINT = AUTH_ENDPOINT + "refresh/"
 token = None
 
 
+def create_user():
+    global token
+    register_headers = {
+        "content-type": "application/json"
+    }
+    register_data = {
+        'username': str(input("User Name: ")).strip(),
+        'email': str(input("Email: ")).strip(),
+        'password': str(input("Password: ")).strip(),
+        'password2': str(input("Repeate Password: "))
+    }
+    r_register = requests.post(AUTH_ENDPOINT + "register/", data=json.dumps(register_data), headers=register_headers)
+    print("Register -> " + r_register.text)
+    token = r_register.json()['token']
+    return token
+
+
 def get_token():
     global token
     if token is None:
@@ -17,12 +34,13 @@ def get_token():
             "content-type": "application/json"
         }
         auth_data = {
-            'username': str(input("User Name: ")).strip(),
+            'username': str(input("User Name/Email: ")).strip(),
             'password': str(input("Password: ")).strip()
         }
         r_auth = requests.post(AUTH_ENDPOINT, data=json.dumps(auth_data), headers=auth_headers)
         print("Auth -> " + r_auth.text)
         token = r_auth.json()['token']
+
     return token
 
 
@@ -35,7 +53,8 @@ def refresh_token(token):
     print("Refresh Token -> " + refresh_token)
     return refresh_token
 
-# TODO detect hoe to send multipart data to make put method works
+
+# TODO detect how to send multipart data to make put method works
 def do(token, method='get', id=None, data={}, image_path=None):
     headers = {
         "Authorization": "JWT " + token,
@@ -67,7 +86,7 @@ def do(token, method='get', id=None, data={}, image_path=None):
 
 
 def executeRequest():
-    request_type = str(input("Request Type get/get_item/put/post/put_image/post_image/exit: ")).strip()
+    request_type = str(input("Request Type register/get/get_item/put/post/put_image/post_image/exit: ")).strip()
     if request_type == "get":
         do(token=get_token(), method="get")
     elif request_type == "get_item":
@@ -80,6 +99,8 @@ def executeRequest():
         do(token=get_token(), method="post", data={"content": str(input("Content: "))})
     elif request_type == "post_image":
         do(token=get_token(), method="post", image_path=input("Image path: "))
+    elif request_type == "register":
+        create_user()
     elif request_type == "exit":
         print("Exit from script")
         return
