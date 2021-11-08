@@ -21,8 +21,10 @@ def create_user():
         'password': str(input("Password: ")).strip(),
         'password2': str(input("Repeate Password: "))
     }
+    print(register_data)
     r_register = requests.post(AUTH_ENDPOINT + "register/", data=json.dumps(register_data), headers=register_headers)
     print("Register -> " + r_register.text)
+    token = r_register.json()['token']
 
 
 def get_token():
@@ -84,7 +86,7 @@ def do(token, method='get', id=None, data={}, image_path=None):
 
 
 def executeRequest():
-    request_type = str(input("Request Type register/get/get_item/put/post/put_image/post_image/exit: ")).strip()
+    request_type = str(input("Request Type reg/get/get_item/put/post/put_image/post_image/exit: ")).strip()
     if request_type == "get":
         do(token=get_token(), method="get")
     elif request_type == "get_item":
@@ -97,13 +99,13 @@ def executeRequest():
         do(token=get_token(), method="post", data={"content": str(input("Content: "))})
     elif request_type == "post_image":
         do(token=get_token(), method="post", image_path=input("Image path: "))
-    elif request_type == "register":
+    elif request_type == "reg":
         create_user()
     elif request_type == "exit":
         print("Exit from script")
         return
     else:
-        print(request_type + " is wrong type of request!!! get/get_item/put/post/put_image/post_image/exit allowed")
+        print(request_type + " is wrong type of request!!! reg/get/get_item/put/post/put_image/post_image/exit allowed")
 
     executeRequest()
 
