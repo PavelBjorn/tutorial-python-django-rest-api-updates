@@ -6,6 +6,7 @@ from rest_framework_jwt.settings import api_settings
 from django.db.models import Q
 
 from .serializers import UserRegisterSerailizer
+from .permissions import AnonPermissionOnly
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -44,10 +45,9 @@ class AuthAPIView(APIView):
 class RegisterAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegisterSerailizer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.AllowAny, AnonPermissionOnly]
 
     # set data to serializer's context
     # to get it in serializer we should use self.contect['request']
     def get_serializer_context(self, *args, **kwargs):
         return {"request": self.request}
-
