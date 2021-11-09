@@ -16,7 +16,7 @@ class UserRegisterSerailizer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     token = serializers.SerializerMethodField(read_only=True)
     expires = serializers.SerializerMethodField(read_only=True)
-    token_response = serializers.SerializerMethodField(read_only=True)
+    message = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
@@ -27,19 +27,15 @@ class UserRegisterSerailizer(serializers.ModelSerializer):
             'password2',
             'token',
             'expires',
-            'token_response'
+            'message',
         ]
         extra_kwargs = {'password': {'write_only': True}}
 
+    def get_message(self, obj):
+        return "Thank you for your register, please verify your email"
+
     def get_expires(self, obj):
         return get_expires()
-
-    def get_token_response(self, obj):
-        user = obj
-        payload = jwt_payload_handler(user)
-        token = jwt_encode_handler(payload)
-        respones = jwt_respose_payload_handler(token, user)
-        return respones
 
     def validate_email(self, value):
         qs = User.objects.filter(email__iexact=value)
@@ -74,5 +70,6 @@ class UserRegisterSerailizer(serializers.ModelSerializer):
             email=validated_data.get("email"),
         )
         user.set_password(raw_password=validated_data.get('password'))
+        user.is_active = False
         user.save()
         return user
