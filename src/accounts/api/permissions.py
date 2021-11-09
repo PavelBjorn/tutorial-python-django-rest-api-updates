@@ -1,0 +1,35 @@
+from rest_framework import permissions
+
+
+class BlacklistPermission(permissions.BasePermission):
+    """
+    Global permission check for blacklisetd IPs
+    """
+
+    def has_permission(self, request, view):
+        ip_addr = request.META['REMOTE_ADDR']
+        blacklisted = Blacklist.objects.filter(ip_addr=ip_addr).exists()
+        return not blacklisted
+
+
+class AnonPermissionOnly(permissions.BasePermission):
+    message = 'You are already atheticated. Please log out to try again.'
+    """
+    Pemissions for Non-authenticated User only
+    """
+
+    def has_permission(self, request, view):
+        return not request.user.is_authenticated
+
+
+class IsOwnerReadOnly(permissions.BasePermission):
+    """
+       Object level permission to only allow owners of an object to edit it.
+       Assumes the model inctance has an `owner` attribute
+    """
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return obj.owner == request.user
