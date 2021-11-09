@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
 from status.models import Status
-from accounts.api.serializers import UserPublicSerializer
+from accounts.api.user.serializers import UserDetailSerializer
 
 
 class StatusSerializer(serializers.ModelSerializer):
-    user = UserPublicSerializer(read_only=True)
+    user = UserDetailSerializer(read_only=True)
 
     class Meta:
         model = Status
