@@ -86,7 +86,7 @@ def do(token, method='get', id=None, data={}, image_path=None):
 
 
 def executeRequest():
-    request_type = str(input("Request Type reg/get/get_item/put/post/put_image/post_image/exit: ")).strip()
+    request_type = str(input("Request Type reg/get/get_item/put/post/put_image/post_image/del/exit: ")).strip()
     if request_type == "get":
         do(token=get_token(), method="get")
     elif request_type == "get_item":
@@ -99,13 +99,15 @@ def executeRequest():
         do(token=get_token(), method="post", data={"content": str(input("Content: "))})
     elif request_type == "post_image":
         do(token=get_token(), method="post", image_path=input("Image path: "))
+    elif request_type == "del":
+        do(token=get_token(), method="delete", id=str(input("Item Id: ")))
     elif request_type == "reg":
         create_user()
     elif request_type == "exit":
         print("Exit from script")
         return
     else:
-        print(request_type + " is wrong type of request!!! reg/get/get_item/put/post/put_image/post_image/exit allowed")
+        print(request_type + " is wrong type of request!!! reg/get/get_item/put/post/put_image/post_image/del/exit allowed")
 
     executeRequest()
 
