@@ -1,15 +1,12 @@
 from rest_framework import serializers
 
 from status.models import Status
-
-''''
-class CustomSerializer(serializers.Serializer):
-    content = serializers.CharField()
-    email = serializers.EmailField()
-'''
+from accounts.api.serializers import UserPublicSerializer
 
 
 class StatusSerializer(serializers.ModelSerializer):
+    user = UserPublicSerializer(read_only=True)
+
     class Meta:
         model = Status
         fields = [

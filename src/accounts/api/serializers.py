@@ -11,6 +11,21 @@ jwt_respose_payload_handler = api_settings.JWT_RESPONSE_PAYLOAD_HANDLER
 User = get_user_model()
 
 
+class UserPublicSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'username',
+            'url'
+        ]
+
+    def get_url(self, obj):
+        return "/api/users/{id}/".format(id=obj.id)
+
+
 class UserRegisterSerailizer(serializers.ModelSerializer):
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
