@@ -1,11 +1,27 @@
 from rest_framework import serializers
 
 from status.models import Status
-from accounts.api.user.serializers import UserDetailSerializer
+from accounts.api.serializers import UserPublicSerializer
+
+
+class StatusInlineUserSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Status
+        fields = [
+            'url',
+            'id',
+            'content',
+            'image'
+        ]
+
+    def get_url(self, obj):
+        return "api/status/{id}/".format(id=obj.id)
 
 
 class StatusSerializer(serializers.ModelSerializer):
-    user = UserDetailSerializer(read_only=True)
+    user = UserPublicSerializer(read_only=True)
 
     class Meta:
         model = Status
