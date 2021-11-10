@@ -9,7 +9,7 @@ class StatusSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField(read_only=True)
     url = serializers.SerializerMethodField(read_only=True)
 
-    #To see how to do it
+    # To see how to do it
     # user_link = serializers.HyperlinkedRelatedField(
     #     source='user',  # user foreign key
     #     lookup_field='username',
@@ -22,7 +22,7 @@ class StatusSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'user',
-            'user_link',
+            # 'user_link',
             'content',
             'image',
             'url'

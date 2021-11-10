@@ -21,6 +21,7 @@ class UpdateManager(models.Manager):
 
 
 class Update(models.Model):
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
     content = models.TextField()
     image = models.ImageField(upload_to=upload_update_image, blank=True, null=True)
