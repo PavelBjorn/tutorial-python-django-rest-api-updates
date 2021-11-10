@@ -6,11 +6,22 @@ from rest_framework.reverse import reverse as api_reverse
 User = get_user_model()
 
 
-# django_hosts
+# django_hosts?
 
 class UserDetailSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField(read_only=True)
     status = serializers.SerializerMethodField(read_only=True)
+
+    # To sew how to work with
+    # statuses = serializers.HyperlinkedRelatedField(
+    #     source='status_set',  # Status.objects.filter(user=user)
+    #     many=True,
+    #     read_only=True,
+    #     lookup_field='id',
+    #     view_name='api-status:detail'
+    # )
+
+    # statuses = StatusInlineUserSerializer(source='status_set', many=True, read_only=True)
 
     class Meta:
         model = User
@@ -19,6 +30,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
             'username',
             'url',
             'status',
+            'statuses'
         ]
 
     def get_url(self, obj):

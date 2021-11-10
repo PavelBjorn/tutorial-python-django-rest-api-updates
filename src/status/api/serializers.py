@@ -9,11 +9,20 @@ class StatusSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField(read_only=True)
     url = serializers.SerializerMethodField(read_only=True)
 
+    #To see how to do it
+    # user_link = serializers.HyperlinkedRelatedField(
+    #     source='user',  # user foreign key
+    #     lookup_field='username',
+    #     view_name='api-user:detail',
+    #     read_only=True
+    # )
+
     class Meta:
         model = Status
         fields = [
             'id',
             'user',
+            'user_link',
             'content',
             'image',
             'url'
