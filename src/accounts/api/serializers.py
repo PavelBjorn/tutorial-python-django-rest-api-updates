@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework.reverse import reverse as api_reverse
 
 from rest_framework_jwt.settings import api_settings
 from .utils import get_expires
@@ -23,7 +24,8 @@ class UserPublicSerializer(serializers.ModelSerializer):
         ]
 
     def get_url(self, obj):
-        return "/api/user/{name}/".format(name=obj.username)
+        request = self.context.get('request')
+        return api_reverse("api-user:detail", kwargs={"username": obj.username}, request=request)
 
 
 class UserRegisterSerailizer(serializers.ModelSerializer):
