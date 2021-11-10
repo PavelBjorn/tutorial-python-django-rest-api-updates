@@ -20,7 +20,7 @@ from django.conf.urls import include
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/updates/', include('updates.api.urls')),  # api/updates/1/ --> detail
-    url(r'^api/auth/', include('accounts.api.urls')),  # api/updates/1/ --> detail
+    url(r'^api/auth/', include(('accounts.api.urls', 'accounts'), namespace='api-auth')),  # api/updates/1/ --> detail
     url(r'^api/status/', include(('status.api.urls', 'status'), namespace="api-status")),
     url(r'^api/user/', include(('accounts.api.user.urls', 'accounts'), namespace='api-user'))
 ]

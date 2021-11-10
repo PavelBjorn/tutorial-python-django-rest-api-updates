@@ -7,7 +7,7 @@ User = get_user_model()
 
 
 class StatusTestCase(TestCase):
-    username = 'pashaTest'
+    username = 'JaneDou'
 
     def setUp(self):
         user = User.objects.create(username=self.username, email="pasha@test.com")
