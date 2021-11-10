@@ -12,7 +12,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField(read_only=True)
     status = serializers.SerializerMethodField(read_only=True)
 
-    # To sew how to work with
+    # To see how it's work
     # statuses = serializers.HyperlinkedRelatedField(
     #     source='status_set',  # Status.objects.filter(user=user)
     #     many=True,
