@@ -47,16 +47,10 @@ class StatusAPIView(
 ):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = StatusSerializer
-    object_id = None
-
-    def get_queryset(self):
-        qs = Status.objects.all()
-        request = self.request
-        # print(request.user)
-        query = request.GET.get('q')
-        if query is not None:
-            qs = qs.filter(content__icontains=query)
-        return qs
+    object_id = None,
+    search_fields = ('user__username', 'content')
+    ordering_fields = ('user_username', 'timestamp')
+    queryset = Status.objects.all()
 
     def post(self, request, *args, **kwargs):
         return self.create(request, args, kwargs)
