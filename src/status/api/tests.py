@@ -1,8 +1,13 @@
+import io
+
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.contrib.auth import get_user_model
 from rest_framework.reverse import reverse as api_revers
 from status.models import Status
+import os
+from PIL import Image
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 User = get_user_model()
 
@@ -115,3 +120,23 @@ class StatusAPITestCase(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION='')
         delete_response = self.deleteStatus(id=post_response.data.get('id', None))
         self.assertEqual(delete_response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_status_POST_image(self):
+        self.loginUser()
+        url = api_revers('api-status:list')
+
+        bytes = io.BytesIO()
+        # (format, (w,h), (RGB))
+        image = Image.new('RGB', (800, 1200), (255, 0, 0))
+        image.save(bytes, "jpeg")
+        tmp_file = SimpleUploadedFile("test.jpg", bytes.getvalue())
+
+        data = {
+            'content': "Test image content",
+            'image': tmp_file
+        }
+        response = self.client.post(url, data, format='multipart')
+        print(response.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Status.objects.filter(id=response.data.get('id', None)).count(), 1)
+        self.assertIsNotNone(response.data.get('image', None))

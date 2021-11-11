@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 from cfeapi.restconf.main import *
 from pathlib import Path
+import sys
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -18,6 +19,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
+
+if 'test' in sys.argv :
+    # store files in memory, no cleanup after tests are finished
+    DEFAULT_FILE_STORAGE = 'inmemorystorage.InMemoryStorage'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'e56gx&#v*2c!0s591g=1ghoqmu#q5q3_io5kor3s$gjq^nz(nn'
