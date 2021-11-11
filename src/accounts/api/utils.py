@@ -8,7 +8,7 @@ expier_delta = api_settings.JWT_REFRESH_EXPIRATION_DELTA
 def jwt_response_payload_handler(token, user: None, request=None):
     return {
         'token': token,
-        'user': user.username,
+        'user': user.id,
         'expires': timezone.now() + expier_delta - datetime.timedelta(seconds=200)
     }
 
